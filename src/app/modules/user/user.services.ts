@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import prisma from '../../../utilities/prisma'
 import httpStatus from 'http-status'
 import { ApiError } from './../../../errorFormating/apiError'
-import { User } from '@prisma/client'
+import { User, UserPhoto } from '@prisma/client'
 import { isExist } from '../auth/auth.utils'
-import { JwtPayload } from 'jsonwebtoken'
+import { userPopulate } from './user.constants'
+import cloudinary from 'cloudinary'
 
-// create user service
+// get user profile
 export const getUserProfileService = async (payload: string) => {
   const result = await prisma.user.findUnique({
     where: {
@@ -17,6 +19,64 @@ export const getUserProfileService = async (payload: string) => {
 
   return result
 }
+
+// get user profile
+export const uploadPhotoService = async (email: string, payload: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+    include: userPopulate,
+  })
+
+  if (user?.photo?.public_id) {
+    const { public_id } = user.photo
+    await cloudinary.v2.uploader.destroy(public_id)
+    const photo = await cloudinary.v2.uploader.upload(payload, {
+      folder: 'lms/user',
+      width: 200,
+    })
+
+    const data: Partial<UserPhoto> = {
+      userId: user?.id,
+      public_id: photo?.public_id,
+      url: photo?.secure_url,
+    }
+    const result = await prisma.userPhoto.update({
+      where: {
+        userId: user?.id,
+      },
+      data,
+    })
+
+    if (!result) {
+      throw new Error(`Photo upload failed`)
+    }
+  } else {
+    const photo = await cloudinary.v2.uploader.upload(payload, {
+      folder: 'lms/user',
+      width: 200,
+    })
+
+    const data: Partial<UserPhoto> = {
+      userId: user?.id,
+      public_id: photo?.public_id,
+      url: photo?.secure_url,
+    }
+
+    const result = await prisma.userPhoto.create({
+      // @ts-ignore
+      data,
+    })
+
+    if (!result) {
+      throw new Error(`Photo upload failed`)
+    }
+  }
+
+  return user
+}
+
 // get users
 export const getUsersService = async (): Promise<
   Partial<Omit<User, 'password'>[]>

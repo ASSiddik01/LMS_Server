@@ -8,6 +8,7 @@ import {
   getUserProfile,
   getUsers,
   updateUser,
+  uploadPhoto,
 } from './user.controllers'
 import { updateUserZod } from './user.validations'
 
@@ -15,6 +16,7 @@ const router = express.Router()
 
 // example route
 router.route('/profile').get(auth(ENUM_USER_ROLE.USER), getUserProfile)
+router.route('/photo').post(auth(ENUM_USER_ROLE.USER), uploadPhoto)
 
 router.route('/').get(auth(ENUM_USER_ROLE.USER), getUsers)
 

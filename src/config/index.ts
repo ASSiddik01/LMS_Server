@@ -24,4 +24,9 @@ export default {
     reset_password_secret_expires_in:
       process.env.JWT_RESET_PASSWORD_SECRET_EXPIRES_IN,
   },
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
+  },
 }

@@ -1,1 +1,3 @@
-export const user = ['']
+export const userPopulate = {
+  photo: true,
+}

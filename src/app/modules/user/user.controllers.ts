@@ -8,16 +8,28 @@ import {
   getUserService,
   getUsersService,
   updateUserService,
+  uploadPhotoService,
 } from './user.services'
 import { Request, Response } from 'express'
 
-// create user controller
+// get user profile
 export const getUserProfile = tryCatch(async (req: Request, res: Response) => {
   const result = await getUserProfileService(req.user?.email)
   sendRes<User>(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'User get successfully',
+    data: result,
+  })
+})
+
+// update photo
+export const uploadPhoto = tryCatch(async (req: Request, res: Response) => {
+  const result = await uploadPhotoService(req.user?.email, req.body.photo)
+  sendRes<User>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Photo upload successfully',
     data: result,
   })
 })
