@@ -64,7 +64,7 @@ export const signUpService = async (data: User): Promise<User | null> => {
     button_text: `Activation`,
     expTime: `1 hours`,
   }
-  sendEmail(emailData)
+  // sendEmail(emailData)
 
   return result
 }
