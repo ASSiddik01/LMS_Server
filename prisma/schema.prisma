@@ -11,18 +11,22 @@ datasource db {
 }
 
 model User {
-  id                 String     @id @default(uuid())
-  name               String
-  email              String     @unique
-  role               role       @default(User)
-  phone              String     @unique
-  password           String
-  isActive           Boolean    @default(false)
-  activationToken    String?
-  passwordResetToken String?
-  passwordChangeAt   DateTime?
-  createdAt          DateTime   @default(now())
-  photo              UserPhoto?
+  id                   String                 @id @default(uuid())
+  name                 String
+  email                String                 @unique
+  role                 role                   @default(User)
+  phone                String                 @unique
+  password             String
+  isActive             Boolean                @default(false)
+  activationToken      String?
+  passwordResetToken   String?
+  passwordChangeAt     DateTime?
+  createdAt            DateTime               @default(now())
+  photo                UserPhoto?
+  courseReviews        CourseReview[]
+  courseComments       CourseComment[]
+  courseCommentReplies CourseCommentReplies[]
+  purchasedCourse      PurchasedCourse[]
 
   @@map("users")
 }
@@ -38,19 +42,148 @@ model UserPhoto {
   @@map("user_photos")
 }
 
-// model PurchasedCourse {
-//   id     String @id @default(uuid())
-//   userId String @unique
-//   user   User   @relation(fields: [userId], references: [id])
+model PurchasedCourse {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-//   courseId String
-//   course   Course @relation(fields: [userId], references: [id])
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id])
 
-//   public_id String
-//   url       String
+  @@map("purchased_course")
+}
 
-//   @@map("purchased_course")
-// }
+model Course {
+  id                  String               @id @default(uuid())
+  name                String
+  description         String
+  tags                String
+  level               String
+  demoUrl             String
+  price               BigInt
+  estimatedPrice      BigInt
+  ratings             Int                  @default(0)
+  purcheses           Int                  @default(0)
+  courseThumbnail     CourseThumbnail?
+  courseBenifits      CourseBenifit[]
+  coursePrerequisites CoursePrerequisite[]
+  courseReviews       CourseReview[]
+  courseData          CourseData?
+  purchasedCourses    PurchasedCourse[]
+
+  @@map("courses")
+}
+
+model CourseData {
+  id             String                @id @default(uuid())
+  videoUrl       String
+  title          String
+  videoSection   String
+  description    String
+  videoLength    BigInt
+  videoPlayer    String
+  suggetion      String
+  videoThumbnail CourseVideoThumbnail?
+  courseDataLink CourseDataLink?
+  courseComment  CourseComment[]
+
+  courseId String @unique
+  course   Course @relation(fields: [courseId], references: [id])
+
+  @@map("course_datas")
+}
+
+model CourseThumbnail {
+  id        String @id @default(uuid())
+  public_id String
+  url       String
+
+  courseId String @unique
+  course   Course @relation(fields: [courseId], references: [id])
+
+  @@map("course_thumbnails")
+}
+
+model CourseVideoThumbnail {
+  id        String @id @default(uuid())
+  public_id String
+  url       String
+
+  courseDataId String     @unique
+  courseData   CourseData @relation(fields: [courseDataId], references: [id])
+
+  @@map("course_video_thumbnails")
+}
+
+model CourseBenifit {
+  id    String @id @default(uuid())
+  title String
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id])
+
+  @@map("course_benifits")
+}
+
+model CoursePrerequisite {
+  id    String @id @default(uuid())
+  title String
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id])
+
+  @@map("course_prerequisites")
+}
+
+model CourseReview {
+  id      String @id @default(uuid())
+  rating  Int    @default(0)
+  comment String
+
+  userId   String
+  user     User   @relation(fields: [userId], references: [id])
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id])
+
+  @@map("course_reviews")
+}
+
+model CourseDataLink {
+  id    String @id @default(uuid())
+  title String
+  url   String
+
+  courseDataId String     @unique
+  courseData   CourseData @relation(fields: [courseDataId], references: [id])
+
+  @@map("course_data_links")
+}
+
+model CourseComment {
+  id                   String                 @id @default(uuid())
+  comment              String
+  courseCommentReplies CourseCommentReplies[]
+
+  userId       String
+  user         User       @relation(fields: [userId], references: [id])
+  courseDataId String
+  courseData   CourseData @relation(fields: [courseDataId], references: [id])
+
+  @@map("course_comments")
+}
+
+model CourseCommentReplies {
+  id      String @id @default(uuid())
+  replies String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  courseCommentId String
+  courseComment   CourseComment @relation(fields: [courseCommentId], references: [id])
+
+  @@map("course_comment_replies")
+}
 
 enum role {
   User

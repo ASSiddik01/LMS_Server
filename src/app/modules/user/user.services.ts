@@ -20,7 +20,7 @@ export const getUserProfileService = async (payload: string) => {
   return result
 }
 
-// get user profile
+// user photo upload
 export const uploadPhotoService = async (email: string, payload: string) => {
   const user = await prisma.user.findUnique({
     where: {
