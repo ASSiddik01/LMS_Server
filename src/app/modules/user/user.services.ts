@@ -15,6 +15,7 @@ export const getUserProfileService = async (payload: string) => {
     where: {
       email: payload,
     },
+    include: userPopulate,
   })
 
   return result

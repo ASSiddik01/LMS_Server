@@ -60,8 +60,8 @@ model Course {
   tags                String
   level               String
   demoUrl             String
-  price               BigInt
-  estimatedPrice      BigInt
+  price               Int
+  estimatedPrice      Int
   ratings             Int                  @default(0)
   purcheses           Int                  @default(0)
   courseThumbnail     CourseThumbnail?
@@ -75,7 +75,7 @@ model Course {
 }
 
 model CourseData {
-  id             String                @id @default(uuid())
+  id             String          @id @default(uuid())
   videoUrl       String
   title          String
   videoSection   String
@@ -83,7 +83,7 @@ model CourseData {
   videoLength    BigInt
   videoPlayer    String
   suggetion      String
-  videoThumbnail CourseVideoThumbnail?
+  // videoThumbnail CourseVideoThumbnail?
   courseDataLink CourseDataLink?
   courseComment  CourseComment[]
 
@@ -104,16 +104,16 @@ model CourseThumbnail {
   @@map("course_thumbnails")
 }
 
-model CourseVideoThumbnail {
-  id        String @id @default(uuid())
-  public_id String
-  url       String
+// model CourseVideoThumbnail {
+//   id        String @id @default(uuid())
+//   public_id String
+//   url       String
 
-  courseDataId String     @unique
-  courseData   CourseData @relation(fields: [courseDataId], references: [id])
+//   courseDataId String     @unique
+//   courseData   CourseData @relation(fields: [courseDataId], references: [id])
 
-  @@map("course_video_thumbnails")
-}
+//   @@map("course_video_thumbnails")
+// }
 
 model CourseBenifit {
   id    String @id @default(uuid())
