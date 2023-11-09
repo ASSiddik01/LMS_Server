@@ -17,6 +17,7 @@ model User {
   role                 role                   @default(User)
   phone                String                 @unique
   password             String
+  address              String?
   isActive             Boolean                @default(false)
   activationToken      String?
   passwordResetToken   String?

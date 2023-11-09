@@ -21,10 +21,11 @@ export const signUp = tryCatch(async (req: Request, res: Response) => {
   sendRes<User>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: `Check email: ${req.body.email} to active your account`,
+    message: `Account activation link sent to your email`,
     data: result,
   })
 })
+
 // account activation
 export const accountActivation = tryCatch(async (req, res) => {
   const { token } = req.params
@@ -32,10 +33,11 @@ export const accountActivation = tryCatch(async (req, res) => {
   sendRes(res, {
     statusCode: 200,
     success: true,
-    message: 'Account active successfully',
+    message: 'Activation successfully',
     data: result,
   })
 })
+
 // sign in
 export const signIn = tryCatch(async (req: Request, res: Response) => {
   const result = await signInService(req.body)

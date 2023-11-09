@@ -24,7 +24,7 @@ const router = express.Router()
 
 router.route('/signup').post(reqValidate(signUpZod), signUp)
 
-router.route('/account-active/:token').patch(accountActivation)
+router.route('/activation/:token').patch(accountActivation)
 
 router.route('/signin').post(reqValidate(signInZod), signIn)
 

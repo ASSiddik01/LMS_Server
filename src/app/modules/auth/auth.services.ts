@@ -56,18 +56,20 @@ export const signUpService = async (data: User): Promise<User | null> => {
   if (!result) {
     throw new Error(`User create failed`)
   }
+
   // send activation link
   const emailData = {
     to: data.email,
     subject: `Account Activation`,
-    link: `${config.client_url}/${data.activationToken}`,
+    link: `${config.client_url}/activation/${data.activationToken}`,
     button_text: `Activation`,
     expTime: `1 hours`,
   }
-  // sendEmail(emailData)
+  sendEmail(emailData)
 
   return result
 }
+
 // account activation
 export const accountActivationService = async (token: string) => {
   const varifiedUser = verifyToken(
@@ -102,6 +104,7 @@ export const accountActivationService = async (token: string) => {
 
   return result
 }
+
 // sign in
 export const signInService = async (
   data: IAuthSignin
@@ -118,8 +121,28 @@ export const signInService = async (
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Password is incorrect')
   }
 
-  // Create Access Token
   const { id, role, phone, name, email } = user
+
+  if (user?.isActive === false) {
+    const activationToken = createToken(
+      { email, phone },
+      config.jwt.activation_secret as Secret,
+      config.jwt.activation_secret_expires_in as string
+    )
+    // send activation link
+    const emailData = {
+      to: email,
+      subject: `Account Activation`,
+      link: `${config.client_url}/activation/${activationToken}`,
+      button_text: `Activation`,
+      expTime: `1 hours`,
+    }
+    sendEmail(emailData)
+
+    throw new Error('Account not active. New activation link send your email')
+  }
+
+  // Create Access Token
   const accessToken = createToken(
     { id, role, phone, name, email },
     config.jwt.secret as Secret,
@@ -138,6 +161,7 @@ export const signInService = async (
     refreshToken,
   }
 }
+
 // refresh token
 export const refreshTokenService = async (
   token: string
