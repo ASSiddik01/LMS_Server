@@ -120,11 +120,11 @@ export const updateUserService = async (
     isExist(others?.phone as string),
   ])
 
-  if (userEmail?.email !== existUser?.email && existUser) {
+  if (userEmail?.email !== existUser?.email && userEmail) {
     throw new Error('Email is used in another user')
   }
 
-  if (userPhone?.phone !== existUser?.phone && existUser) {
+  if (userPhone?.phone !== existUser?.phone && userPhone) {
     throw new Error('Phone is used in another user')
   }
 
