@@ -26,7 +26,6 @@ export const getUserProfile = tryCatch(async (req: Request, res: Response) => {
 // update photo
 export const uploadPhoto = tryCatch(async (req: Request, res: Response) => {
   const result = await uploadPhotoService(req.user?.email, req.body.photo)
-  console.log(req.body)
   sendRes<User>(res, {
     statusCode: httpStatus.OK,
     success: true,
