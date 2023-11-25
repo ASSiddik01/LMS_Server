@@ -1,15 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
   Course,
   CourseBenifit,
   CourseData,
   CoursePrerequisite,
+  Prisma,
 } from '@prisma/client'
 import prisma from '../../../utilities/prisma'
 import cloudinary from 'cloudinary'
 import httpStatus from 'http-status'
 import { ApiError } from './../../../errorFormating/apiError'
 import { asyncForEach } from '../../../utilities/asyncForEach'
+import { coursePopulate, courseSearchableFields } from './course.constants'
+import { IPaginationOptions } from '../../../interface/pagination'
+import { ICourseFilterRequest } from './course.interfaces'
+import { calculatePagination } from '../../../helpers/paginationHelper'
+import { IGenericResponse } from '../../../interface/common'
 
 // create course service
 export const createCourseService = async (
@@ -114,16 +121,72 @@ export const createCourseService = async (
       where: {
         id: savedCourse.id,
       },
-      include: {
-        courseThumbnail: true,
-        courseBenifits: true,
-        coursePrerequisites: true,
-        courseDatas: true,
-      },
+      include: coursePopulate,
     })
 
     return result
   }
 
   throw new ApiError(httpStatus.BAD_REQUEST, 'Unable to create course')
+}
+
+export const getCoursesService = async (
+  filters: ICourseFilterRequest,
+  options: IPaginationOptions
+): Promise<IGenericResponse<Course[]>> => {
+  const { limit, page, skip, sortBy, sortOrder } = calculatePagination(options)
+  const { searchTerm, ...filterData } = filters
+
+  const andConditions = []
+
+  if (searchTerm) {
+    andConditions.push({
+      OR: courseSearchableFields.map(field => ({
+        [field]: {
+          contains: searchTerm,
+          // mode: 'insensitive',
+        },
+      })),
+    })
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    andConditions.push({
+      AND: Object.keys(filterData).map(key => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
+      })),
+    })
+  }
+
+  const whereConditions: Prisma.CourseWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {}
+
+  const result = await prisma.course.findMany({
+    where: whereConditions,
+    skip,
+    take: limit,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+    include: coursePopulate,
+  })
+
+  const total = await prisma.course.count({
+    where: whereConditions,
+  })
+
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Courses retrieved failed')
+  }
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+    },
+    data: result,
+  }
 }

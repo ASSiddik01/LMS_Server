@@ -33,3 +33,7 @@ export type ICourseData = {
   suggetion: string
   courseId: string
 }
+
+export type ICourseFilterRequest = {
+  searchTerm?: string | undefined
+}

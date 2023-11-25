@@ -22,12 +22,13 @@ model User {
   activationToken      String?
   passwordResetToken   String?
   passwordChangeAt     DateTime?
-  createdAt            DateTime               @default(now())
   photo                UserPhoto?
   courseReviews        CourseReview[]
   courseComments       CourseComment[]
   courseCommentReplies CourseCommentReplies[]
   purchasedCourse      PurchasedCourse[]
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
 
   @@map("users")
 }
@@ -39,6 +40,8 @@ model UserPhoto {
 
   public_id String
   url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("user_photos")
 }
@@ -50,6 +53,9 @@ model PurchasedCourse {
 
   courseId String
   course   Course @relation(fields: [courseId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("purchased_course")
 }
@@ -71,6 +77,8 @@ model Course {
   courseReviews       CourseReview[]
   purchasedCourses    PurchasedCourse[]
   courseDatas         CourseData[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
 
   @@map("courses")
 }
@@ -91,6 +99,9 @@ model CourseData {
   courseId String
   course   Course @relation(fields: [courseId], references: [id])
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("course_datas")
 }
 
@@ -101,6 +112,9 @@ model CourseThumbnail {
 
   courseId String @unique
   course   Course @relation(fields: [courseId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("course_thumbnails")
 }
@@ -123,6 +137,9 @@ model CourseBenifit {
   courseId String
   course   Course @relation(fields: [courseId], references: [id])
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("course_benifits")
 }
 
@@ -132,6 +149,9 @@ model CoursePrerequisite {
 
   courseId String
   course   Course @relation(fields: [courseId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("course_prerequisites")
 }
@@ -146,6 +166,9 @@ model CourseReview {
   courseId String
   course   Course @relation(fields: [courseId], references: [id])
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("course_reviews")
 }
 
@@ -156,6 +179,9 @@ model CourseDataLink {
 
   courseDataId String     @unique
   courseData   CourseData @relation(fields: [courseDataId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("course_data_links")
 }
@@ -170,6 +196,9 @@ model CourseComment {
   courseDataId String
   courseData   CourseData @relation(fields: [courseDataId], references: [id])
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("course_comments")
 }
 
@@ -182,6 +211,9 @@ model CourseCommentReplies {
 
   courseCommentId String
   courseComment   CourseComment @relation(fields: [courseCommentId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("course_comment_replies")
 }
