@@ -7,12 +7,14 @@ import { createCourseService } from './course.services'
 
 // create course controller
 export const createCourse = tryCatch(async (req: Request, res: Response) => {
-  const { benifits, prerequisites, courseData, ...course } = req.body
+  const { benifits, prerequisites, courseDatas, courseThumbnail, ...course } =
+    req.body
   const result = await createCourseService(
     course,
+    courseThumbnail,
     benifits,
     prerequisites,
-    courseData
+    courseDatas
   )
   sendRes<Course>(res, {
     statusCode: httpStatus.OK,

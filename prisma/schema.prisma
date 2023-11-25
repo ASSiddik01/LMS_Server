@@ -56,7 +56,7 @@ model PurchasedCourse {
 
 model Course {
   id                  String               @id @default(uuid())
-  name                String
+  name                String               @unique
   description         String
   tags                String
   level               String
@@ -64,13 +64,13 @@ model Course {
   price               Int
   estimatedPrice      Int
   ratings             Int                  @default(0)
-  purcheses           Int                  @default(0)
+  purchases           Int                  @default(0)
   courseThumbnail     CourseThumbnail?
   courseBenifits      CourseBenifit[]
   coursePrerequisites CoursePrerequisite[]
   courseReviews       CourseReview[]
-  courseData          CourseData?
   purchasedCourses    PurchasedCourse[]
+  courseDatas         CourseData[]
 
   @@map("courses")
 }
@@ -81,14 +81,14 @@ model CourseData {
   title          String
   videoSection   String
   description    String
-  videoLength    BigInt
+  videoLength    Int
   videoPlayer    String
-  suggetion      String
+  suggestion     String
   // videoThumbnail CourseVideoThumbnail?
   courseDataLink CourseDataLink?
   courseComment  CourseComment[]
 
-  courseId String @unique
+  courseId String
   course   Course @relation(fields: [courseId], references: [id])
 
   @@map("course_datas")
