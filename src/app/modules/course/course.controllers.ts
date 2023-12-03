@@ -3,7 +3,11 @@ import { tryCatch } from '../../../utilities/tryCatch'
 import { sendRes } from '../../../utilities/sendRes'
 import httpStatus from 'http-status'
 import { Course } from '@prisma/client'
-import { createCourseService, getCoursesService } from './course.services'
+import {
+  createCourseService,
+  getCourseService,
+  getCoursesService,
+} from './course.services'
 import { courseFilterableFields } from './course.constants'
 import { pick } from '../../../utilities/pick'
 import { paginationFields } from '../../../constants/pagination'
@@ -27,7 +31,7 @@ export const createCourse = tryCatch(async (req: Request, res: Response) => {
   })
 })
 
-// get users
+// get courses
 export const getCourses = tryCatch(async (req: Request, res: Response) => {
   const filters = pick(req.query, courseFilterableFields)
   const options = pick(req.query, paginationFields)
@@ -39,5 +43,18 @@ export const getCourses = tryCatch(async (req: Request, res: Response) => {
     message: 'Courses retrieved successfully',
     meta: result?.meta,
     data: result?.data,
+  })
+})
+
+// get course
+export const getCourse = tryCatch(async (req: Request, res: Response) => {
+  const { id } = req.params
+  const result = await getCourseService(id)
+
+  sendRes<Partial<Course>>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Course retrieved successfully',
+    data: result,
   })
 })

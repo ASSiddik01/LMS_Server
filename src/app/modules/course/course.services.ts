@@ -190,3 +190,19 @@ export const getCoursesService = async (
     data: result,
   }
 }
+
+// get course
+export const getCourseService = async (
+  id: string
+): Promise<Partial<Course>> => {
+  const result = await prisma.course.findUnique({
+    where: {
+      id,
+    },
+  })
+
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Course retrieved failed')
+  }
+  return result
+}
