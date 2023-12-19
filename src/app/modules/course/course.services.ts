@@ -18,7 +18,7 @@ import { ICourseFilterRequest } from './course.interfaces'
 import { calculatePagination } from '../../../helpers/paginationHelper'
 import { IGenericResponse } from '../../../interface/common'
 
-// create course service
+// create course
 export const createCourseService = async (
   course: Course,
   courseThumbnail: string,
@@ -130,6 +130,7 @@ export const createCourseService = async (
   throw new ApiError(httpStatus.BAD_REQUEST, 'Unable to create course')
 }
 
+// get courses
 export const getCoursesService = async (
   filters: ICourseFilterRequest,
   options: IPaginationOptions
@@ -205,4 +206,89 @@ export const getCourseService = async (
     throw new ApiError(httpStatus.NOT_FOUND, 'Course retrieved failed')
   }
   return result
+}
+
+// update course
+export const updateCourseService = async (
+  id: string,
+  course: Course,
+  courseThumbnail: string,
+  benifits: CourseBenifit[],
+  prerequisites: CoursePrerequisite[],
+  courseDatas: CourseData[]
+): Promise<Course | null> => {
+  // console.log(course, courseThumbnail, benifits, prerequisites, courseDatas)
+  const isExist = await prisma.course.findUnique({
+    where: {
+      id,
+    },
+  })
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Course not found')
+  }
+
+  console.log(isExist)
+
+  throw new ApiError(httpStatus.BAD_REQUEST, 'Unable to update course')
+}
+
+// delete course
+export const deleteCourseService = async (
+  id: string
+): Promise<Course | null> => {
+  const isExist = await prisma.course.findUnique({
+    where: {
+      id,
+    },
+    include: coursePopulate,
+  })
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Course not found')
+  }
+
+  const deletedCourse = await prisma.$transaction(async courseTransaction => {
+    await courseTransaction.courseData.deleteMany({
+      where: {
+        courseId: id,
+      },
+    })
+
+    await courseTransaction.coursePrerequisite.deleteMany({
+      where: {
+        courseId: id,
+      },
+    })
+
+    await courseTransaction.courseBenifit.deleteMany({
+      where: {
+        courseId: id,
+      },
+    })
+
+    if (isExist?.courseThumbnail?.public_id) {
+      await cloudinary.v2.uploader.destroy(isExist?.courseThumbnail?.public_id)
+    }
+
+    await courseTransaction.courseThumbnail.deleteMany({
+      where: {
+        courseId: id,
+      },
+    })
+
+    const result = await courseTransaction.course.deleteMany({
+      where: {
+        id,
+      },
+    })
+
+    return result
+  })
+
+  if (deletedCourse) {
+    return null
+  }
+
+  throw new ApiError(httpStatus.BAD_REQUEST, 'Unable to delete course')
 }

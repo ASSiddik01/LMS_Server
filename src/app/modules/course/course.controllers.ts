@@ -5,14 +5,16 @@ import httpStatus from 'http-status'
 import { Course } from '@prisma/client'
 import {
   createCourseService,
+  deleteCourseService,
   getCourseService,
   getCoursesService,
+  updateCourseService,
 } from './course.services'
 import { courseFilterableFields } from './course.constants'
 import { pick } from '../../../utilities/pick'
 import { paginationFields } from '../../../constants/pagination'
 
-// create course controller
+// create course
 export const createCourse = tryCatch(async (req: Request, res: Response) => {
   const { benifits, prerequisites, courseDatas, courseThumbnail, ...course } =
     req.body
@@ -55,6 +57,40 @@ export const getCourse = tryCatch(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Course retrieved successfully',
+    data: result,
+  })
+})
+
+// update course
+export const updateCourse = tryCatch(async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { benifits, prerequisites, courseDatas, courseThumbnail, ...course } =
+    req.body
+  const result = await updateCourseService(
+    id,
+    course,
+    courseThumbnail,
+    benifits,
+    prerequisites,
+    courseDatas
+  )
+  sendRes<Course>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Create course successfully',
+    data: result,
+  })
+})
+
+// delete course
+export const deleteCourse = tryCatch(async (req: Request, res: Response) => {
+  const { id } = req.params
+
+  const result = await deleteCourseService(id)
+  sendRes<Course>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Delete course successfully',
     data: result,
   })
 })
