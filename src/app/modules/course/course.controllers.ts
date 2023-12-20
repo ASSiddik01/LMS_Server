@@ -8,7 +8,6 @@ import {
   deleteCourseService,
   getCourseService,
   getCoursesService,
-  updateCourseService,
 } from './course.services'
 import { courseFilterableFields } from './course.constants'
 import { pick } from '../../../utilities/pick'
@@ -57,27 +56,6 @@ export const getCourse = tryCatch(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Course retrieved successfully',
-    data: result,
-  })
-})
-
-// update course
-export const updateCourse = tryCatch(async (req: Request, res: Response) => {
-  const { id } = req.params
-  const { benifits, prerequisites, courseDatas, courseThumbnail, ...course } =
-    req.body
-  const result = await updateCourseService(
-    id,
-    course,
-    courseThumbnail,
-    benifits,
-    prerequisites,
-    courseDatas
-  )
-  sendRes<Course>(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Create course successfully',
     data: result,
   })
 })

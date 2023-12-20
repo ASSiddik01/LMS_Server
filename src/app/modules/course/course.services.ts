@@ -208,31 +208,6 @@ export const getCourseService = async (
   return result
 }
 
-// update course
-export const updateCourseService = async (
-  id: string,
-  course: Course,
-  courseThumbnail: string,
-  benifits: CourseBenifit[],
-  prerequisites: CoursePrerequisite[],
-  courseDatas: CourseData[]
-): Promise<Course | null> => {
-  // console.log(course, courseThumbnail, benifits, prerequisites, courseDatas)
-  const isExist = await prisma.course.findUnique({
-    where: {
-      id,
-    },
-  })
-
-  if (!isExist) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Course not found')
-  }
-
-  console.log(isExist)
-
-  throw new ApiError(httpStatus.BAD_REQUEST, 'Unable to update course')
-}
-
 // delete course
 export const deleteCourseService = async (
   id: string
